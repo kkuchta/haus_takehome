@@ -98,6 +98,7 @@ app.patch('/api/feedback', requiresAuth, async (req, res) => {
     await feedback.update({ content });
   }
   res.send(feedbackShow(feedback));
+  // TODO: also send to slack here
 });
 app.get('/api/feedback', requiresAuth, async (req, res) => {
   let feedback = await req.user.getFeedback();
