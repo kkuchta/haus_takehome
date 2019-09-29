@@ -100,6 +100,9 @@ app.patch('/api/feedback', requiresAuth, async (req, res) => {
   res.send(feedbackShow(feedback));
   // TODO: also send to slack here
 });
+app.get('/api/user', requiresAuth, async (req, res) => {
+  res.send(userShow(req.user));
+});
 app.get('/api/feedback', requiresAuth, async (req, res) => {
   let feedback = await req.user.getFeedback();
   if (feedback == null) {
