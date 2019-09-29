@@ -3,7 +3,7 @@ const session = require('express-session')
 const bodyParser = require("body-parser");
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 5000;
 
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
