@@ -34,7 +34,7 @@ const requiresAuth = function (req, res, next) {
 
 passport.use(new LocalStrategy(
   async (username, password, done) => {
-    console.log("logging in");
+    console.log("logging in", username, password);
 
     const user = await User.findOne({ where: { username } })
     console.log("found", user.id);
@@ -61,7 +61,7 @@ passport.deserializeUser(async function(username, done) {
   done(null, user)
 });
 
-app.post('/api/sessions', function(req, res, next) {
+app.post('/api/session', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     console.log("logged in, maybe");
     if (err) { return next(err); }
@@ -71,6 +71,12 @@ app.post('/api/sessions', function(req, res, next) {
       return res.send(userShow(user))
     });
   })(req, res, next);
+});
+
+app.delete('/api/session', requiresAuth, function(req, res, next) {
+  console.log("logged out");
+  req.logout();
+  res.status(204).send()
 });
 
 app.post('/api/users', async function(req, res) {

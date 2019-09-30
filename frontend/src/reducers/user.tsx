@@ -24,6 +24,8 @@ export default function(state: UserStateShape | undefined, action: UserAction) {
       return {...state, isFetching: false, user: (action as ReceiveUserAction).user}
     case 'RECEIVE_UNAUTHORIZED_USER':
       return {...state, isFetching: false, user: "UNAUTHORIZED_USER"}
+    case 'CLEAR_USER':
+      return {...state, isFetching: false, user: "UNAUTHORIZED_USER" }
   }
   return state === undefined ? { isFetching: false } : state;
 }

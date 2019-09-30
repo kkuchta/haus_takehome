@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThunkDispatch } from 'redux-thunk';
 import { connect } from 'react-redux'
 import { fetchUser } from './actions'
 import { AppState } from './store'
@@ -7,7 +8,7 @@ import LoggedOutPage from './components/LoggedOutPage'
 import LoggedInPage from './components/LoggedInPage'
 
 interface Props {
-  dispatch: any
+  dispatch: ThunkDispatch<any, any, any>
   isFetchingUser: boolean
   user: User
 }
