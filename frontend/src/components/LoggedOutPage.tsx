@@ -1,8 +1,9 @@
 import React from 'react';
-import { AppState } from '../store'
-import { connect } from 'react-redux'
-import { login, signup } from '../actions'
+import { AppState } from '../store';
+import { connect } from 'react-redux';
+import { login, signup } from '../actions';
 import { ThunkDispatch } from 'redux-thunk';
+import './LoggedOutPage.css';
 
 interface State {
   username: string
@@ -40,8 +41,14 @@ class LoggedOutPage extends React.Component<Props, State> {
       <div className="loggedOutPage">
         { lastLoginSuccess === false && <div>Login failed</div>}
         { lastSignupSuccess === false && <div>Signup failed</div>}
-        <div>username: <input onChange={this.onUsernameChange} /></div>
-        <div>password: <input onChange={this.onPasswordChange} /></div>
+        <div className='usernameField field'>
+          <label>username:</label>
+          <input className="usernameInput" type='text' onChange={this.onUsernameChange} />
+        </div>
+        <div className='passwordField field'>
+          <label>password:</label>
+          <input className="passwordInput" type='password' onChange={this.onPasswordChange} />
+        </div>
         <button onClick={this.onLoginClick}>Log in</button>
         <button onClick={this.onSignupClick}>Sign up</button>
       </div>

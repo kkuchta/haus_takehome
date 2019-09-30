@@ -3,6 +3,7 @@ import { AppState } from '../store'
 import { connect } from 'react-redux'
 import { ThunkDispatch } from 'redux-thunk'
 import { logout, saveFeedback, fetchFeedback } from '../actions'
+import './LoggedInPage.css'
 
 interface Props {
   dispatch: ThunkDispatch<any, any, any>
@@ -39,11 +40,14 @@ class LoggedInPage extends React.Component<Props, State> {
   render() {
     return (
       <div className="loggedInPage">
-        <br />
-        <textarea value={this.state.feedback} onChange={this.onFeedbackChange} />
+        <h2>Feedback:</h2>
+        <textarea
+          value={this.state.feedback}
+          onChange={this.onFeedbackChange}
+          placeholder='Write your thoughts here...'
+        />
         <br />
         <button onClick={this.onFeedbackSaveClick}>Save Feedback</button>
-        <br />
         <button onClick={this.onLogOutClick}>Log Out</button>
       </div>
     );
