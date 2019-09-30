@@ -1,5 +1,5 @@
 import { Action } from 'redux'
-import { ReceiveFeedbackAction } from '../actions'
+import { ReceiveFeedbackAction } from '../actions/feedback'
 
 interface FeedbackStateShape {
   isFetching: boolean,

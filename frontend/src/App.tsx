@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThunkDispatch } from 'redux-thunk';
 import { connect } from 'react-redux'
-import { fetchUser } from './actions'
+import { fetchUser } from './actions/user'
 import { AppState } from './store'
 import { User, UnauthorizedUser } from './reducers/user'
 import LoggedOutPage from './components/LoggedOutPage'

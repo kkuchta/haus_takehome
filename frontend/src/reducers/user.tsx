@@ -1,5 +1,5 @@
 import { Action } from 'redux'
-import { ReceiveUserAction } from '../actions'
+import { ReceiveUserAction } from '../actions/user'
 
 export const UnauthorizedUser = "UNAUTHORIZED_USER"
 type UnauthorizedUserType = "UNAUTHORIZED_USER"

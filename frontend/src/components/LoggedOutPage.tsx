@@ -1,7 +1,8 @@
 import React from 'react';
 import { AppState } from '../store';
 import { connect } from 'react-redux';
-import { login, signup } from '../actions';
+import { login } from '../actions/session';
+import { signup } from '../actions/user'
 import { ThunkDispatch } from 'redux-thunk';
 import './LoggedOutPage.css';
 

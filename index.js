@@ -104,7 +104,9 @@ app.patch('/api/feedback', requiresAuth, async (req, res) => {
   } else {
     await feedback.update({ content });
   }
+  throw "SLACK!"
   res.send(feedbackShow(feedback));
+  //fafds dfs fasd fds adfs
   // TODO: also send to slack here
 });
 app.get('/api/user', requiresAuth, async (req, res) => {

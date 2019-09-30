@@ -2,7 +2,8 @@ import React from 'react';
 import { AppState } from '../store'
 import { connect } from 'react-redux'
 import { ThunkDispatch } from 'redux-thunk'
-import { logout, saveFeedback, fetchFeedback } from '../actions'
+import { fetchFeedback, saveFeedback } from '../actions/feedback'
+import { logout } from '../actions/session'
 import Loading from './Loading'
 import './LoggedInPage.css'
 
