@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const app = express()
 const port = process.env.PORT || 5000;
 
+app.use(express.static('../frontend/build'))
+
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 
