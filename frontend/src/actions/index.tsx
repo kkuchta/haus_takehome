@@ -30,9 +30,10 @@ export function fetchUser(): ThunkAction<void, AppState, null, Action> {
         if (response.status === 403) {
           dispatch(receiveUnauthorizedUser());
         } else if (response.ok) {
-          dispatch(receiveUser(response.json));
+          dispatch(receiveUser(response.json()));
         } else {
           // TODO handle other errors
+          console.log('Error fetching user');
         }
       })
   }
@@ -60,19 +61,18 @@ function requestLogin() {
 }
 
 export function login(username: string, password: string): ThunkAction<void, AppState, null, Action> {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch(requestLogin())
-    postSession(username, password).then(
-      response => {
-        if (response.status === 403) {
-          dispatch(receiveBadLogin());
-        } else if (response.ok) {
-          dispatch(receiveUser(response.json));
-        } else {
-          // TODO handle other errors
-        }
-      }
-    )
+    const response = await postSession(username, password)
+    if (response.status === 403) {
+      dispatch(receiveBadLogin());
+    } else if (response.ok) {
+      const json = await response.json();
+      dispatch(receiveUser(json));
+    } else {
+      // TODO handle other errors
+      console.log('Error logging in');
+    }
   }
 }
 
@@ -96,3 +96,44 @@ export function logout(): ThunkAction<void, AppState, null, Action> {
     deleteSession().then(() => dispatch(clearUser()))
   }
 }
+
+function patchFeedback(feedback: string) {
+  console.log('patchFeedback')
+  return fetch('/api/feedback', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ content: feedback })
+  });
+}
+
+function requestSaveFeedback() {
+  return {
+    type: 'REQUEST_SAVE_FEEDBACK'
+  }
+}
+
+function receiveFeedback(feedback: { content: string }) {
+  return {
+    type: 'REQUEST_SAVE_FEEDBACK',
+    feedback: feedback.content
+  }
+}
+
+export function saveFeedback(feedback: string): ThunkAction<void, AppState, null, Action> {
+  console.log('here1')
+  return async (dispatch) => {
+    console.log('here2')
+    dispatch(requestSaveFeedback());
+    const response = await patchFeedback(feedback)
+    console.log('got response:', response)
+    if (response.ok) {
+      const json = await response.json();
+      dispatch(receiveFeedback(json));
+    } else {
+      // TODO handle error
+      console.log('Error saving feedback');
+    }
+  };
+};
