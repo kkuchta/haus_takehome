@@ -1,22 +1,37 @@
 import React from 'react';
+import { AppState } from '../store'
 import { connect } from 'react-redux'
 import { ThunkDispatch } from 'redux-thunk'
-import { logout, saveFeedback } from '../actions'
+import { logout, saveFeedback, fetchFeedback } from '../actions'
 
 interface Props {
   dispatch: ThunkDispatch<any, any, any>
+  feedback?: string
 }
 interface State {
-  feedback: string
+  feedback?: string
 }
 class LoggedInPage extends React.Component<Props, State> {
+  state = {
+    feedback: ''
+  }
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.feedback !== this.props.feedback) {
+      this.setState({feedback: this.props.feedback});
+    }
+  }
+  componentDidMount() {
+    this.props.dispatch(fetchFeedback());
+  }
   onLogOutClick = () => {
     console.log('log out')
     this.props.dispatch(logout())
   }
   onFeedbackSaveClick = () => {
     console.log('saving')
-    this.props.dispatch(saveFeedback(this.state.feedback))
+    let feedback = this.state.feedback;
+    if (feedback == null) { feedback = '' };
+    this.props.dispatch(saveFeedback(feedback))
   }
   onFeedbackChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({feedback: event.target.value});
@@ -24,9 +39,8 @@ class LoggedInPage extends React.Component<Props, State> {
   render() {
     return (
       <div className="loggedInPage">
-        logged in
         <br />
-        <textarea onChange={this.onFeedbackChange} />
+        <textarea value={this.state.feedback} onChange={this.onFeedbackChange} />
         <br />
         <button onClick={this.onFeedbackSaveClick}>Save Feedback</button>
         <br />
@@ -36,4 +50,8 @@ class LoggedInPage extends React.Component<Props, State> {
   }
 }
 
-export default connect()(LoggedInPage);
+const mapStateToProps = (state: AppState) => ({
+  feedback: state.feedback && state.feedback.feedback,
+  isFetchingFeedback: state.feedback.isFetching
+})
+export default connect(mapStateToProps)(LoggedInPage);

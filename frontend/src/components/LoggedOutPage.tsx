@@ -1,6 +1,7 @@
 import React from 'react';
+import { AppState } from '../store'
 import { connect } from 'react-redux'
-import { login } from '../actions'
+import { login, signup } from '../actions'
 import { ThunkDispatch } from 'redux-thunk';
 
 interface State {
@@ -9,6 +10,8 @@ interface State {
 }
 interface Props {
   dispatch: ThunkDispatch<any, any, any>
+  lastLoginSuccess?: boolean
+  lastSignupSuccess?: boolean
 }
 class LoggedOutPage extends React.Component<Props, State> {
   state = {username: '', password: ''}
@@ -26,16 +29,29 @@ class LoggedOutPage extends React.Component<Props, State> {
     this.props.dispatch(login(username, password))
     console.log(username, password)
   }
+  onSignupClick = () => {
+    const { username, password } = this.state;
+    this.props.dispatch(signup(username, password))
+  }
   render() {
+    const { lastLoginSuccess, lastSignupSuccess } = this.props;
+    console.log('lastLoginSuccess=', lastLoginSuccess)
     return (
       <div className="loggedOutPage">
-        logged out !!
+        { lastLoginSuccess === false && <div>Login failed</div>}
+        { lastSignupSuccess === false && <div>Signup failed</div>}
         <div>username: <input onChange={this.onUsernameChange} /></div>
         <div>password: <input onChange={this.onPasswordChange} /></div>
         <button onClick={this.onLoginClick}>Log in</button>
+        <button onClick={this.onSignupClick}>Sign up</button>
       </div>
     );
   }
 }
 
-export default connect()(LoggedOutPage);
+const mapStateToProps = (state: AppState) => ({
+  lastLoginSuccess: state.session && state.session.lastLoginSuccess,
+  lastSignupSuccess: state.user && state.user.lastSignupSuccess
+})
+
+export default connect(mapStateToProps)(LoggedOutPage);

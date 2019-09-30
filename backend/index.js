@@ -37,7 +37,6 @@ passport.use(new LocalStrategy(
     console.log("logging in", username, password);
 
     const user = await User.findOne({ where: { username } })
-    console.log("found", user.id);
     if (!user) {
       console.log("no user");
       return done(null, false, { message: 'Incorrect username.' });

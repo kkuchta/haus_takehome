@@ -23,19 +23,18 @@ function receiveUnauthorizedUser() {
 }
 
 export function fetchUser(): ThunkAction<void, AppState, null, Action> {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch(requestUser())
-    return fetch(`/api/user`)
-      .then(response => {
-        if (response.status === 403) {
-          dispatch(receiveUnauthorizedUser());
-        } else if (response.ok) {
-          dispatch(receiveUser(response.json()));
-        } else {
-          // TODO handle other errors
-          console.log('Error fetching user');
-        }
-      })
+    const response = await fetch(`/api/user`)
+    if (response.status === 403) {
+      dispatch(receiveUnauthorizedUser());
+    } else if (response.ok) {
+      const json = await response.json();
+      dispatch(receiveUser(json));
+    } else {
+      // TODO handle other errors
+      console.log('Error fetching user');
+    }
   }
 }
 
@@ -49,9 +48,9 @@ function postSession(username: string, password: string) {
   });
 }
 
-function receiveBadLogin() {
+function receiveLoginFailure() {
   return {
-    type: 'RECEIVE_BAD_LOGIN'
+    type: 'RECEIVE_LOGIN_FAILURE'
   }
 }
 function requestLogin() {
@@ -59,19 +58,53 @@ function requestLogin() {
     type: 'REQUEST_LOGIN'
   }
 }
+//function receiveLogin() {
+  //return {
+    //type: 'RECEIVE_LOGIN'
+  //}
+//}
 
 export function login(username: string, password: string): ThunkAction<void, AppState, null, Action> {
   return async (dispatch) => {
     dispatch(requestLogin())
     const response = await postSession(username, password)
     if (response.status === 403) {
-      dispatch(receiveBadLogin());
+      console.log('failure')
+      dispatch(receiveLoginFailure());
     } else if (response.ok) {
+      console.log('failure')
       const json = await response.json();
       dispatch(receiveUser(json));
     } else {
       // TODO handle other errors
       console.log('Error logging in');
+    }
+  }
+}
+
+function requestSignup() {
+  return {
+    type: 'REQUEST_SIGNUP'
+  }
+}
+
+function receiveBadSignup() {
+  return {
+    type: 'RECEIVE_SIGNUP_FAILURE'
+  }
+}
+
+export function signup(username: string, password: string): ThunkAction<void, AppState, null, Action> {
+  return async (dispatch) => {
+    dispatch(requestSignup())
+    const response = await postUser(username, password)
+    if (response.status === 400) {
+      dispatch(receiveBadSignup());
+    } else if (response.ok) {
+      const json = await response.json();
+      dispatch(receiveUser(json));
+    } else {
+      console.log('Error signing up');
     }
   }
 }
@@ -116,18 +149,22 @@ function requestSaveFeedback() {
 
 function receiveFeedback(feedback: { content: string }) {
   return {
-    type: 'REQUEST_SAVE_FEEDBACK',
+    type: 'RECEIVE_FEEDBACK',
     feedback: feedback.content
+  }
+}
+export type ReceiveFeedbackAction = ReturnType<typeof receiveFeedback>
+
+function requestFeedback() {
+  return {
+    type: 'REQUEST_FEEDBACK'
   }
 }
 
 export function saveFeedback(feedback: string): ThunkAction<void, AppState, null, Action> {
-  console.log('here1')
   return async (dispatch) => {
-    console.log('here2')
     dispatch(requestSaveFeedback());
     const response = await patchFeedback(feedback)
-    console.log('got response:', response)
     if (response.ok) {
       const json = await response.json();
       dispatch(receiveFeedback(json));
@@ -137,3 +174,28 @@ export function saveFeedback(feedback: string): ThunkAction<void, AppState, null
     }
   };
 };
+
+export function fetchFeedback(): ThunkAction<void, AppState, null, Action> {
+  // TODO
+  return async (dispatch) => {
+    dispatch(requestFeedback())
+    const response = await fetch(`/api/feedback`)
+    if (response.ok) {
+      const json = await response.json();
+      dispatch(receiveFeedback(json));
+    } else {
+      // TODO handle other errors
+      console.log('Error fetching feedback');
+    }
+  }
+}
+
+function postUser(username: string, password: string) {
+  return fetch('/api/users', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password })
+  });
+}
