@@ -3,10 +3,13 @@ import { AppState } from '../store'
 import { connect } from 'react-redux'
 import { ThunkDispatch } from 'redux-thunk'
 import { logout, saveFeedback, fetchFeedback } from '../actions'
+import Loading from './Loading'
 import './LoggedInPage.css'
 
 interface Props {
   dispatch: ThunkDispatch<any, any, any>
+  isFetchingFeedback: boolean
+  isSavingFeedback: boolean
   feedback?: string
 }
 interface State {
@@ -38,6 +41,7 @@ class LoggedInPage extends React.Component<Props, State> {
     this.setState({feedback: event.target.value});
   }
   render() {
+    if (this.props.isFetchingFeedback) { return <Loading /> }
     return (
       <div className="loggedInPage">
         <h2>Feedback:</h2>
@@ -56,6 +60,7 @@ class LoggedInPage extends React.Component<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   feedback: state.feedback && state.feedback.feedback,
-  isFetchingFeedback: state.feedback.isFetching
+  isFetchingFeedback: state.feedback.isFetching,
+  isSavingFeedback: state.feedback.isSaving
 })
 export default connect(mapStateToProps)(LoggedInPage);
