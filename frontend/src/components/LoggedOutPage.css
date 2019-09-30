@@ -1,0 +1,10 @@
+.loggedOutPage .field {
+  margin: 10px;
+}
+.loggedOutPage label {
+  margin-right: 10px;
+}
+.loggedOutPage .usernameInput, .loggedOutPage .passwordInput {
+  border-radius: 5px;
+  padding: 5px;
+}
