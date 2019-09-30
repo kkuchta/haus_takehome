@@ -26,7 +26,6 @@ const userShow = (user) => JSON.stringify({ id: user.id, username: user.username
 const feedbackShow = (feedback) => JSON.stringify({ content: feedback.content });
 
 const requiresAuth = function (req, res, next) {
-  console.log("here", req.isAuthenticated());
   if (req.isAuthenticated()) {
     return next();
   } else {
@@ -36,16 +35,12 @@ const requiresAuth = function (req, res, next) {
 
 passport.use(new LocalStrategy(
   async (username, password, done) => {
-    console.log("logging in", username, password);
-
     const user = await User.findOne({ where: { username } })
     if (!user) {
-      console.log("no user");
       return done(null, false, { message: 'Incorrect username.' });
     }
     // Why is validPassword not a function?  Is instanceMethods not working?
     if (!user.validPassword(password)) {
-      console.log("invalid password");
       return done(null, false, { message: 'Incorrect password.' });
     }
     return done(null, user);
@@ -53,18 +48,15 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function(user, done) {
-  //console.log("serializeUser", user);
   done(null, user.username);
 });
 passport.deserializeUser(async function(username, done) {
-  //console.log("deserializeUser", username);
   const user = await User.findOne({ where: { username } });
   done(null, user)
 });
 
 app.post('/api/session', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
-    console.log("logged in, maybe");
     if (err) { return next(err); }
     if (!user) { return res.status(403).send('unauthorized') }
     req.logIn(user, function(err) {
@@ -75,7 +67,6 @@ app.post('/api/session', function(req, res, next) {
 });
 
 app.delete('/api/session', requiresAuth, function(req, res, next) {
-  console.log("logged out");
   req.logout();
   res.status(204).send()
 });
@@ -113,12 +104,10 @@ app.get('/api/user', requiresAuth, async (req, res) => {
 app.get('/api/feedback', requiresAuth, async (req, res) => {
   let feedback = await req.user.getFeedback();
   if (feedback == null) {
-    console.log("Found no feedback...setting");
     feedback = Feedback.create({ content: '', user: req.user });
     req.user.setFeedback(feedback);
   }
-  console.log("feedback now = ", feedback.id);
   res.send(feedbackShow(feedback));
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Listening on port ${port}!`))
