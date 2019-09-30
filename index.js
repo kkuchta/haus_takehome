@@ -1,30 +1,30 @@
 const express = require('express')
 const session = require('express-session')
 const bodyParser = require("body-parser");
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy;
+const { User, Feedback } = require('./db');
 
 const app = express()
 const port = process.env.PORT || 5000;
 
+
+// ---- Middelware Setup ----
 app.use(express.static('frontend/build'))
 
-const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy;
-
-const { User, Feedback } = require('./db');
-
+// Set up session management
 app.use(session({
   secret: 'todo real secret from env',
   resave: false,
   saveUninitialized: true,
   cookie: {} // Would add { secure: true } if this is a production app
 }));
+
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
-const userShow = (user) => JSON.stringify({ id: user.id, username: user.username })
-const feedbackShow = (feedback) => JSON.stringify({ content: feedback.content });
-
+// Middleware for requiring auth on an endpoint
 const requiresAuth = function (req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -33,6 +33,8 @@ const requiresAuth = function (req, res, next) {
   }
 }
 
+// ---- PassportJS Setup ----
+// Set up Passportjs, which handles authentication + session setup
 passport.use(new LocalStrategy(
   async (username, password, done) => {
     const user = await User.findOne({ where: { username } })
@@ -46,7 +48,6 @@ passport.use(new LocalStrategy(
     return done(null, user);
   }
 ));
-
 passport.serializeUser(function(user, done) {
   done(null, user.username);
 });
@@ -54,6 +55,14 @@ passport.deserializeUser(async function(username, done) {
   const user = await User.findOne({ where: { username } });
   done(null, user)
 });
+
+// ---- Views ----
+// Some cheap "views" for turning model objects into json strings
+
+const userShow = (user) => JSON.stringify({ id: user.id, username: user.username })
+const feedbackShow = (feedback) => JSON.stringify({ content: feedback.content });
+
+// ---- Routes ----
 
 app.post('/api/session', function(req, res, next) {
   passport.authenticate('local', function(err, user, info) {

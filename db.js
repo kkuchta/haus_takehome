@@ -4,9 +4,10 @@ const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: 'db.sqlite'
 });
-//const safeCompare = require('safe-compare');
 const bcrypt = require('bcrypt')
 
+
+// ---- Models ----
 const User = sequelize.define('user', {
   username: {
     type: Sequelize.STRING,
@@ -38,44 +39,15 @@ const Feedback = sequelize.define('feedback', {
 })
 User.hasOne(Feedback);
 
+// ---- DB Setup ----
+
 // In prod we'd use migrations.  Here, we'll just always force the db to match
-// our schema.
+// our schema.  This only does table creates, not updates, so if you make a
+// change to a previously-created table, change this to `force: true` to drop
+// all tables and recreate them.  This loses all your data.
 sequelize.sync({ force: false })
 
 module.exports = {
   User,
   Feedback
 }
-
-// In a real app, we'd use a proper migration framework.  For this, though,
-// we'll just create the tables on load if they don't exist.  In development,
-// we can drop them as needed to recreate them.
-
-//db.run('DROP TABLE IF EXISTS users;')
-//db.run('DROP TABLE IF EXISTS feedbacks;')
-
-//module.exports = {
-  //setup: () => {
-    //db.run(`
-      //CREATE TABLE IF NOT EXISTS users (
-        //id INTEGER PRIMARY KEY AUTOINCREMENT,
-        //hashed_password STRING,
-        //username STRING
-      //);
-      //CREATE TABLE IF NOT EXISTS feedbacks (
-        //id INTEGER PRIMARY KEY AUTOINCREMENT,
-        //FOREIGN KEY(user_id) REFERENCES users(id)
-        //name STRING
-      //);
-    //`)
-  //},
-  //findUser: (username) => {
-    //db.get('SELECT * FROM users WHERE id=
-  //},
-  //saveUser: (user) => {
-  //},
-  //findFeedback: (user_id) => {
-  //},
-  //saveFeedback: (feedback) => {
-  //}
-//}
