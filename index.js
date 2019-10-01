@@ -1,13 +1,21 @@
 const express = require('express')
 const session = require('express-session')
 const bodyParser = require("body-parser");
+const request = require('request-promise-native');
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 const { User, Feedback } = require('./db');
 
+// Load env vars from a local .env file outside of prod.  This file can contain
+// semi-secret secrets (eg credentials to my testing slack team), since it'll be
+// .gitignore'd
+if (process.env.environment != 'production') {
+  require('dotenv').config()
+}
+
 const app = express()
 const port = process.env.PORT || 5000;
-
+const slack_hook = process.env.slack_hook
 
 // ---- Middelware Setup ----
 app.use(express.static('frontend/build'))
@@ -104,14 +112,20 @@ app.patch('/api/feedback', requiresAuth, async (req, res) => {
   } else {
     await feedback.update({ content });
   }
-  throw "SLACK!"
+
+  // TODO: move this into a slack API wrapper if it gets any more complicated
+  // than these 5 lines.
+  const body = { text: content, username: 'kevin_kuchta' }
+  try {
+    await request.post(slack_hook, { json: true, body: body })
+  } catch(err) { console.log("err = ", err) }
   res.send(feedbackShow(feedback));
-  //fafds dfs fasd fds adfs
-  // TODO: also send to slack here
 });
+
 app.get('/api/user', requiresAuth, async (req, res) => {
   res.send(userShow(req.user));
 });
+
 app.get('/api/feedback', requiresAuth, async (req, res) => {
   let feedback = await req.user.getFeedback();
   if (feedback == null) {
