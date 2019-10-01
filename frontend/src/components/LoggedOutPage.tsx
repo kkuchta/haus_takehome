@@ -29,7 +29,6 @@ class LoggedOutPage extends React.Component<Props, State> {
   onLoginClick = () => {
     const { username, password } = this.state;
     this.props.dispatch(login(username, password))
-    console.log(username, password)
   }
   onSignupClick = () => {
     const { username, password } = this.state;
@@ -37,11 +36,10 @@ class LoggedOutPage extends React.Component<Props, State> {
   }
   render() {
     const { lastLoginSuccess, lastSignupSuccess } = this.props;
-    console.log('lastLoginSuccess=', lastLoginSuccess)
     return (
       <div className="loggedOutPage">
-        { lastLoginSuccess === false && <div>Login failed</div>}
-        { lastSignupSuccess === false && <div>Signup failed</div>}
+        {lastLoginSuccess === false && <div>Login failed</div>}
+        {lastSignupSuccess === false && <div>Signup failed</div>}
         <div className='usernameField field'>
           <label>username:</label>
           <input className="usernameInput" type='text' onChange={this.onUsernameChange} />

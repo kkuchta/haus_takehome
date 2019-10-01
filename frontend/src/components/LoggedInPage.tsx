@@ -21,6 +21,8 @@ class LoggedInPage extends React.Component<Props, State> {
     feedback: ''
   }
   componentDidUpdate(prevProps: Props) {
+    // When we've finished loading feedback from the backend, stick it into the
+    // existing text area
     if (prevProps.feedback !== this.props.feedback) {
       this.setState({feedback: this.props.feedback});
     }
@@ -29,11 +31,9 @@ class LoggedInPage extends React.Component<Props, State> {
     this.props.dispatch(fetchFeedback());
   }
   onLogOutClick = () => {
-    console.log('log out')
     this.props.dispatch(logout())
   }
   onFeedbackSaveClick = () => {
-    console.log('saving')
     let feedback = this.state.feedback;
     if (feedback == null) { feedback = '' };
     this.props.dispatch(saveFeedback(feedback))

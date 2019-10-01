@@ -3,16 +3,6 @@ import { AppState } from '../store'
 import { ThunkAction } from 'redux-thunk'
 import { receiveUser, clearUser } from './user'
 
-function postSession(username: string, password: string) {
-  return fetch('/api/session', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ username, password })
-  });
-}
-
 function receiveLoginFailure() {
   return {
     type: 'RECEIVE_LOGIN_FAILURE'
@@ -22,6 +12,31 @@ function requestLogin() {
   return {
     type: 'REQUEST_LOGIN'
   }
+}
+
+function deleteSession() {
+  return fetch('/api/session', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+export function logout(): ThunkAction<void, AppState, null, Action> {
+  return (dispatch) => {
+    deleteSession().then(() => dispatch(clearUser()))
+  }
+}
+
+function postSession(username: string, password: string) {
+  return fetch('/api/session', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password })
+  });
 }
 
 export function login(username: string, password: string): ThunkAction<void, AppState, null, Action> {
@@ -42,19 +57,3 @@ export function login(username: string, password: string): ThunkAction<void, App
   }
 }
 
-
-
-function deleteSession() {
-  return fetch('/api/session', {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-export function logout(): ThunkAction<void, AppState, null, Action> {
-  return (dispatch) => {
-    deleteSession().then(() => dispatch(clearUser()))
-  }
-}

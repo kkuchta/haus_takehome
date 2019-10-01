@@ -2,21 +2,12 @@ import { Action } from 'redux'
 import { AppState } from '../store'
 import { ThunkAction } from 'redux-thunk'
 
-function patchFeedback(feedback: string) {
-  console.log('patchFeedback')
-  return fetch('/api/feedback', {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ content: feedback })
-  });
+function requestSaveFeedback() {
+  return { type: 'REQUEST_SAVE_FEEDBACK' }
 }
 
-function requestSaveFeedback() {
-  return {
-    type: 'REQUEST_SAVE_FEEDBACK'
-  }
+function requestFeedback() {
+  return { type: 'REQUEST_FEEDBACK' }
 }
 
 function receiveFeedback(feedback: { content: string }) {
@@ -27,10 +18,15 @@ function receiveFeedback(feedback: { content: string }) {
 }
 export type ReceiveFeedbackAction = ReturnType<typeof receiveFeedback>
 
-function requestFeedback() {
-  return {
-    type: 'REQUEST_FEEDBACK'
-  }
+function patchFeedback(feedback: string) {
+  console.log('patchFeedback')
+  return fetch('/api/feedback', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ content: feedback })
+  });
 }
 
 export function saveFeedback(feedback: string): ThunkAction<void, AppState, null, Action> {
@@ -48,7 +44,6 @@ export function saveFeedback(feedback: string): ThunkAction<void, AppState, null
 };
 
 export function fetchFeedback(): ThunkAction<void, AppState, null, Action> {
-  // TODO
   return async (dispatch) => {
     dispatch(requestFeedback())
     const response = await fetch(`/api/feedback`)
